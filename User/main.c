@@ -15,11 +15,17 @@
 #include "u8g2_glue.h"
 #include "mui.h"
 #include "mui_u8g2.h"
+
+#include "buttons.h"
 /* Global typedef */
 
 /* Global define */
 
 /* Global Variable */
+
+static void InitTick(void);
+static uint8_t IsIntervalOver(uint16_t prev_timestamp, uint16_t int_ticks);
+static uint16_t GetTick(void);
 
 static uint8_t mui_hrule(mui_t *ui, uint8_t msg);
 static uint16_t menu_get_cnt(void *data);
@@ -94,15 +100,15 @@ fds_t fds_data[] =
 /* top level main menu */
 MUI_FORM(0)
 MUI_STYLE(1)
-MUI_LABEL(5,9, "§¤§Ý§Ñ§Ó§ß§à§Ö §Þ§Ö§ß§ð")
+MUI_LABEL(5,9, "Ð“Ð»Ð°Ð²Ð½Ð¾Ðµ Ð¼ÐµÐ½ÑŽ")
 MUI_XY("HR", 0,12)
 MUI_STYLE(0)
 
 MUI_DATA("GP",
-    MUI_10 "§¯§Ñ§ã§ä§â§à§Û§Ü§Ñ §Ó§í§ç§à§Õ§Ñ|"
-    MUI_11 "§£§Ö§ã §Ú§Þ§á§å§Ý§î§ã§Ñ|"
-    MUI_13 "§³§Ò§â§à§ã §ß§Ñ§ã§ä§â§à§Ö§Ü|"
-    MUI_14 "§®§Ö§ß§ð §ß§Ñ §Ñ§ß§Ô§Ý§Ú§Û§ã§Ü§à§Þ"
+    MUI_10 "ÐžÐ± ÑƒÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ðµ|"
+    MUI_11 "ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸|"
+    MUI_13 "ÐÑ€Ñ…Ð¸Ð²|"
+    MUI_14 "EN menu"
     )
 
 MUI_XYA("GC", 5, 23, 0)
@@ -132,7 +138,7 @@ int main(void)
 	SystemCoreClockUpdate();
 	Delay_Init();
 
-	u8g2_Setup_ssd1309_128x64_noname0_f(&u8g2, U8G2_R2, u8x8_byte_HW_spi, u8x8_gpio_and_delay_HW_spi);
+	u8g2_Setup_ssd1309_128x64_noname0_f(&u8g2, U8G2_R0, u8x8_byte_HW_spi, u8x8_gpio_and_delay_HW_spi);
 
 	u8g2_InitDisplay(&u8g2);
 	u8g2_ClearDisplay(&u8g2);
@@ -144,6 +150,8 @@ int main(void)
 	mui_GotoForm(&mui, /* form_id= */ 0, /* initial_cursor_position= */ 0);
 
 	uint8_t is_redraw = 1;
+	InitTick();
+	uint16_t prev_time = 0;
 
 	while(1) {
 		/* check whether the menu is active */
@@ -182,6 +190,35 @@ int main(void)
 		} else {
 		/* do something else, maybe clear the screen */
 		}
+
+		//Using integer overflow
+		//Read buttons every ~30ms (not precisely)
+		if (IsIntervalOver(prev_time, 100)){
+			prev_time = GetTick();
+			QueryButtons();
+		}
 	}
+}
+
+static void InitTick(void){
+	//Timer is at freerun, no interrupts
+	//TODO Notice: check APB when changing freerun timer
+	RCC->APB1PCENR |= RCC_APB1Periph_TIM2;
+	while(( RCC->APB1PCENR & RCC_APB1Periph_TIM2 ) == 0){
+		; //It can take some time to set the bit
+	}
+	TIM_FREERUN_3KHZ->PSC = 31999; //APB running at 96 MHz, 1 tick is 3 kHz
+	TIM_FREERUN_3KHZ->ATRLR = 0xFFFF; //Freerun, don't touch
+	TIM_FREERUN_3KHZ->SWEVGR |= TIM_UG; //Update RSC and ATRLR
+	TIM_FREERUN_3KHZ->INTFR = 0; //Clear flags
+	TIM_FREERUN_3KHZ->CTLR1 |= TIM_CEN;
+}
+
+static uint8_t IsIntervalOver(uint16_t prev_timestamp, uint16_t int_ticks){
+	return (((uint16_t)(TIM_FREERUN_3KHZ->CNT - prev_timestamp)) >= int_ticks);
+}
+
+static uint16_t GetTick(void){
+	return TIM_FREERUN_3KHZ->CNT;
 }
 

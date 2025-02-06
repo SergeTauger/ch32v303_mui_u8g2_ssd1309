@@ -50,6 +50,8 @@
 #define BTN2_NEXT_PIN		2
 #define BTN1_SELECT_PIN		3
 
+#define TIM_FREERUN_3KHZ	TIM2
+
 #endif /* __CH32V30x_CONF_H */
 
 

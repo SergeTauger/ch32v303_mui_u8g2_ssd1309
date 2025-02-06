@@ -17,7 +17,7 @@ C_DEPS += \
 User/GUI/%.o: ../User/GUI/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GNU RISC-V Cross C Compiler'
-	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -msave-restore -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -I"/home/stauger/mrs_community-workspace/Flowmeter_HMI/Debug" -I"/home/stauger/mrs_community-workspace/Flowmeter_HMI/Core" -I"/home/stauger/mrs_community-workspace/Flowmeter_HMI/User" -I"/home/stauger/mrs_community-workspace/Flowmeter_HMI/Peripheral/inc" -I"/home/stauger/mrs_community-workspace/Flowmeter_HMI/User/GUI" -I"/home/stauger/mrs_community-workspace/Flowmeter_HMI/User/GUI/u8g2" -std=gnu99 -ffunction-sections -fdata-sections -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
+	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -msave-restore -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -I"/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/Debug" -I"/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/Core" -I"/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/User" -I"/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/Peripheral/inc" -I"/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/User/GUI" -I"/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/User/GUI/u8g2" -I"/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/User/debounce" -std=gnu99 -ffunction-sections -fdata-sections -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

@@ -8,6 +8,7 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include User/debounce/subdir.mk
 -include User/GUI/u8g2/subdir.mk
 -include User/GUI/subdir.mk
 -include User/subdir.mk
@@ -50,7 +51,7 @@ all: Flowmeter_HMI.elf secondary-outputs
 Flowmeter_HMI.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GNU RISC-V Cross C Linker'
-	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -msave-restore -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -T "/home/stauger/mrs_community-workspace/Flowmeter_HMI/Ld/Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"Flowmeter_HMI.map" --specs=nano.specs --specs=nosys.specs -o "Flowmeter_HMI.elf" $(OBJS) $(USER_OBJS) $(LIBS)
+	riscv-none-embed-gcc -march=rv32imac -mabi=ilp32 -msmall-data-limit=8 -msave-restore -Os -fmessage-length=0 -fsigned-char -ffunction-sections -fdata-sections -fno-common -Wunused -Wuninitialized  -g -T "/home/stauger/Projects/u8g2_mui_demo/ch32v303_mui_u8g2_ssd1309/Ld/Link.ld" -nostartfiles -Xlinker --gc-sections -Wl,-Map,"Flowmeter_HMI.map" --specs=nano.specs --specs=nosys.specs -o "Flowmeter_HMI.elf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
